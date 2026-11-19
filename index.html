@@ -7,48 +7,50 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="box">
-    <h3>نظام إدارة النتائج</h3>
+  <div class="container my-4">
+    <div class="main-card mx-auto">
+      <h4 class="text-center mb-3">نظام إدارة النتائج ولجنة الرأفة</h4>
 
-    <div id="errorBox" class="alert alert-danger d-none"></div>
+      <div id="errorBox" class="alert alert-danger d-none"></div>
 
-    <div class="mb-2">
-      <label>اسم الطالب</label>
-      <input type="text" id="studentName" class="form-control">
+      <div class="mb-2">
+        <label class="form-label">اسم الطالب</label>
+        <input type="text" id="studentName" class="form-control">
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label">درجة المادة الأولى</label>
+        <input type="number" id="grade1" class="form-control">
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label">درجة المادة الثانية</label>
+        <input type="number" id="grade2" class="form-control">
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label">درجة المادة الثالثة</label>
+        <input type="number" id="grade3" class="form-control">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">نسبة الحضور</label>
+        <input type="number" id="attendance" class="form-control">
+      </div>
+
+      <div class="d-flex gap-2 mb-3">
+        <button type="button" id="addBtn" class="btn btn-primary w-50">إضافة طالب</button>
+        <button type="button" id="mercyBtn" class="btn btn-success w-50">تفعيل لجنة الرأفة</button>
+      </div>
+
+      <hr>
+
+      <h6>قائمة الطلاب</h6>
+      <div id="studentsBox" class="mb-3"></div>
+
+      <h6>التقرير النهائي</h6>
+      <div id="reportBox"></div>
     </div>
-
-    <div class="mb-2">
-      <label>المادة الأولى</label>
-      <input type="number" id="grade1" class="form-control">
-    </div>
-
-    <div class="mb-2">
-      <label>المادة الثانية</label>
-      <input type="number" id="grade2" class="form-control">
-    </div>
-
-    <div class="mb-2">
-      <label>المادة الثالثة</label>
-      <input type="number" id="grade3" class="form-control">
-    </div>
-
-    <div class="mb-3">
-      <label>نسبة الحضور</label>
-      <input type="number" id="attendance" class="form-control">
-    </div>
-
-    <button type="button" id="addBtn" class="btn btn-primary">إضافة طالب</button>
-    <button type="button" id="mercyBtn" class="btn btn-secondary">تفعيل لجنة الرأفة</button>
-
-    <hr>
-
-    <h5>قائمة الطلاب</h5>
-    <div id="studentsBox"></div>
-
-    <hr>
-
-    <h5>التقرير النهائي</h5>
-    <div id="reportBox"></div>
   </div>
 
   <script src="js/app.js"></script>
