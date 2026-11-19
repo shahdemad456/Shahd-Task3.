@@ -5,8 +5,8 @@ class Student {
   #att;
 
   constructor(name, g1, g2, g3, att) {
-    if (!name.trim()) {
-      throw new Error("من فضلك اكتب اسم الطالب");
+    if (name.trim() === "") {
+      throw new Error("برجاء ادخال اسم الطالب");
     }
     this.name = name.trim();
     this.g1 = g1;
@@ -15,28 +15,31 @@ class Student {
     this.att = att;
   }
 
-  #checkNumber(val, label) {
+  #checkNum(val, msgName) {
+    if (val === "") {
+      throw new Error(msgName + " فارغه");
+    }
     const num = Number(val);
-    if (val === "" ||  isNaN(num) || num < 0 || num > 100) {
-      throw new Error(label + " يجب أن تكون رقماً بين 0 و 100");
+    if (isNaN(num)  num < 0  num > 100) {
+      throw new Error(msgName + " غير صحيحه");
     }
     return num;
   }
 
   set g1(v) {
-    this.#g1 = this.#checkNumber(v, "الدرجة الأولى");
+    this.#g1 = this.#checkNum(v, "الدرجه الاولي");
   }
 
   set g2(v) {
-    this.#g2 = this.#checkNumber(v, "الدرجة الثانية");
+    this.#g2 = this.#checkNum(v, "الدرجه الثانيه");
   }
 
   set g3(v) {
-    this.#g3 = this.#checkNumber(v, "الدرجة الثالثة");
+    this.#g3 = this.#checkNum(v, "الدرجه الثالثه");
   }
 
   set att(v) {
-    this.#att = this.#checkNumber(v, "نسبة الحضور");
+    this.#att = this.#checkNum(v, "نسبه الحضور");
   }
 
   get g1() {
@@ -55,7 +58,7 @@ class Student {
     return this.#att;
   }
 
-  getAverage() {
+  getAvg() {
     return (this.#g1 + this.#g2 + this.#g3) / 3;
   }
 }
@@ -80,7 +83,7 @@ addBtn.onclick = function () {
   errorBox.textContent = "";
 
   try {
-    const student = new Student(
+    const st = new Student(
       nameInput.value,
       g1Input.value,
       g2Input.value,
@@ -88,14 +91,14 @@ addBtn.onclick = function () {
       attInput.value
     );
 
-    studentsList.push(student);
+    studentsList.push(st);
 
     studentsBox.innerHTML +=
-      "<div class='student-card'>" +
-      "<strong>الاسم:</strong> " + student.name + " | " +
-      "<strong>الدرجات:</strong> " + student.g1 + "، " + student.g2 + "، " + student.g3 + " | " +
-      "<strong>المتوسط:</strong> " + student.getAverage().toFixed(2) + " | " +
-      "<strong>الحضور:</strong> " + student.att + "%" +
+      "<div class='student-row'>" +
+      "الاسم : " + st.name + " | " +
+      "الدرجات : " + st.g1 + " ، " + st.g2 + " ، " + st.g3 + " | " +
+      "المتوسط : " + st.getAvg().toFixed(2) + " | " +
+      "الحضور : " + st.att + "%" +
       "</div>";
 
     nameInput.value = "";
@@ -103,8 +106,8 @@ addBtn.onclick = function () {
     g2Input.value = "";
     g3Input.value = "";
     attInput.value = "";
-  } catch (err) {
-    errorBox.textContent = err.message;
+  } catch (error) {
+    errorBox.textContent = error.message;
     errorBox.classList.remove("d-none");
   }
 };
@@ -112,19 +115,25 @@ addBtn.onclick = function () {
 mercyBtn.onclick = function () {
   errorBox.classList.add("d-none");
 
-  const struggling = studentsList.filter(function (s) {
-    return s.getAverage() >= 40 && s.getAverage() <= 49;
+  const weakStudents = studentsList.filter(function (st) {
+    const avg = st.getAvg();
+    return avg >= 40 && avg <= 49;
   });
 
-  if (struggling.length === 0) {
-    reportBox.innerHTML = "<p class='mb-0'>عدد الطلاب المتعثرين: 0</p>";
+  if (weakStudents.length === 0) {
+    reportBox.innerHTML =
+      "<div class='report-box'>" +
+      "<div>عدد الطلاب المتعثرين : 0</div>" +
+      "<div>اسماء الطلاب : لا يوجد</div>" +
+      "<div>المتوسط بعد الرافه : 0</div>" +
+      "</div>";
     return;
   }
 
-  const afterMercy = struggling.map(function (s) {
+  const afterMercy = weakStudents.map(function (st) {
     return {
-      name: s.name,
-      newAvg: s.getAverage() + 5
+      name: st.name,
+      newAvg: st.getAvg() + 5
     };
   });
 
@@ -132,14 +141,18 @@ mercyBtn.onclick = function () {
     return total + item.newAvg;
   }, 0);
 
-  const finalAvg = sumAvg / afterMercy.length;
+  const finalAvg = afterMercy.length > 0 ? sumAvg / afterMercy.length : 0;
 
-  const namesList = afterMercy.map(function (item) {
-    return item.name;
-  }).join("، ");
+  const namesText = afterMercy
+    .map(function (item) {
+      return item.name;
+    })
+    .join(" ، ");
 
   reportBox.innerHTML =
-    "<p><strong>عدد الطلاب المتعثرين:</strong> " + afterMercy.length + "</p>" +
-    "<p><strong>أسماء الطلاب المتعثرين:</strong> " + namesList + "</p>" +
-    "<p class='mb-0'><strong>المتوسط العام بعد الرأفة:</strong> " + finalAvg.toFixed(2) + "</p>";
+    "<div class='report-box'>" +
+    "<div>عدد الطلاب المتعثرين : " + afterMercy.length + "</div>" +
+    "<div>اسماء الطلاب : " + namesText + "</div>" +
+    "<div>المتوسط بعد الرافه : " + finalAvg.toFixed(2) + "</div>" +
+    "</div>";
 };
