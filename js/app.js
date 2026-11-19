@@ -6,7 +6,7 @@ class Student {
 
   constructor(name, g1, g2, g3, att) {
     if (name.trim() === "") {
-      throw new Error("برجاء ادخال اسم الطالب");
+      throw new Error("من فضلك اكتب اسم الطالب");
     }
     this.name = name.trim();
     this.g1 = g1;
@@ -15,31 +15,31 @@ class Student {
     this.att = att;
   }
 
-  #checkNum(val, msgName) {
+  #check(val, text) {
     if (val === "") {
-      throw new Error(msgName + " فارغه");
+      throw new Error("من فضلك اكتب " + text);
     }
     const num = Number(val);
     if (isNaN(num)  num < 0  num > 100) {
-      throw new Error(msgName + " غير صحيحه");
+      throw new Error(text + " يجب أن تكون بين 0 و 100");
     }
     return num;
   }
 
   set g1(v) {
-    this.#g1 = this.#checkNum(v, "الدرجه الاولي");
+    this.#g1 = this.#check(v, "المادة الأولى");
   }
 
   set g2(v) {
-    this.#g2 = this.#checkNum(v, "الدرجه الثانيه");
+    this.#g2 = this.#check(v, "المادة الثانية");
   }
 
   set g3(v) {
-    this.#g3 = this.#checkNum(v, "الدرجه الثالثه");
+    this.#g3 = this.#check(v, "المادة الثالثة");
   }
 
   set att(v) {
-    this.#att = this.#checkNum(v, "نسبه الحضور");
+    this.#att = this.#check(v, "نسبة الحضور");
   }
 
   get g1() {
@@ -58,7 +58,7 @@ class Student {
     return this.#att;
   }
 
-  getAvg() {
+  avg() {
     return (this.#g1 + this.#g2 + this.#g3) / 3;
   }
 }
@@ -83,7 +83,7 @@ addBtn.onclick = function () {
   errorBox.textContent = "";
 
   try {
-    const st = new Student(
+    const s = new Student(
       nameInput.value,
       g1Input.value,
       g2Input.value,
@@ -91,14 +91,16 @@ addBtn.onclick = function () {
       attInput.value
     );
 
-    studentsList.push(st);
+    studentsList.push(s);
 
     studentsBox.innerHTML +=
-      "<div class='student-row'>" +
-      "الاسم : " + st.name + " | " +
-      "الدرجات : " + st.g1 + " ، " + st.g2 + " ، " + st.g3 + " | " +
-      "المتوسط : " + st.getAvg().toFixed(2) + " | " +
-      "الحضور : " + st.att + "%" +
+      "<div class='student-item'>" +
+      "الاسم: " + s.name + " | " +
+      "المادة الأولى: " + s.g1 + " | " +
+      "المادة الثانية: " + s.g2 + " | " +
+      "المادة الثالثة: " + s.g3 + " | " +
+      "المتوسط: " + s.avg().toFixed(2) + " | " +
+      "نسبة الحضور: " + s.att + "%" +
       "</div>";
 
     nameInput.value = "";
@@ -115,44 +117,43 @@ addBtn.onclick = function () {
 mercyBtn.onclick = function () {
   errorBox.classList.add("d-none");
 
-  const weakStudents = studentsList.filter(function (st) {
-    const avg = st.getAvg();
-    return avg >= 40 && avg <= 49;
+  const low = studentsList.filter(function (s) {
+    return s.avg() >= 40 && s.avg() <= 49;
   });
 
-  if (weakStudents.length === 0) {
+  if (low.length === 0) {
     reportBox.innerHTML =
       "<div class='report-box'>" +
-      "<div>عدد الطلاب المتعثرين : 0</div>" +
-      "<div>اسماء الطلاب : لا يوجد</div>" +
-      "<div>المتوسط بعد الرافه : 0</div>" +
+      "<div>عدد الطلاب المتعثرين: 0</div>" +
+      "<div>أسماء الطلاب المتعثرين: لا يوجد</div>" +
+      "<div>المتوسط العام بعد الرأفة: 0.00</div>" +
       "</div>";
     return;
   }
 
-  const afterMercy = weakStudents.map(function (st) {
+  const afterMercy = low.map(function (s) {
     return {
-      name: st.name,
-      newAvg: st.getAvg() + 5
+      name: s.name,
+      newAvg: s.avg() + 5
     };
   });
 
-  const sumAvg = afterMercy.reduce(function (total, item) {
+  const sum = afterMercy.reduce(function (total, item) {
     return total + item.newAvg;
   }, 0);
 
-  const finalAvg = afterMercy.length > 0 ? sumAvg / afterMercy.length : 0;
+  const finalAvg = afterMercy.length > 0 ? sum / afterMercy.length : 0;
 
-  const namesText = afterMercy
+  const names = afterMercy
     .map(function (item) {
       return item.name;
     })
-    .join(" ، ");
+    .join("، ");
 
   reportBox.innerHTML =
     "<div class='report-box'>" +
-    "<div>عدد الطلاب المتعثرين : " + afterMercy.length + "</div>" +
-    "<div>اسماء الطلاب : " + namesText + "</div>" +
-    "<div>المتوسط بعد الرافه : " + finalAvg.toFixed(2) + "</div>" +
+    "<div>عدد الطلاب المتعثرين: " + afterMercy.length + "</div>" +
+    "<div>أسماء الطلاب المتعثرين: " + names + "</div>" +
+    "<div>المتوسط العام بعد الرأفة: " + finalAvg.toFixed(2) + "</div>" +
     "</div>";
 };
