@@ -15,31 +15,31 @@ class Student {
     this.att = att;
   }
 
-  #checkNum(val, label) {
+  #check(val, label) {
     if (val === "") {
       throw new Error("من فضلك اكتب " + label);
     }
-    const num = Number(val);
-    if (isNaN(num)  num < 0  num > 100) {
+    var n = Number(val);
+    if (isNaN(n)  n < 0  n > 100) {
       throw new Error(label + " يجب أن تكون بين 0 و 100");
     }
-    return num;
+    return n;
   }
 
   set g1(v) {
-    this.#g1 = this.#checkNum(v, "درجة المادة الأولى");
+    this.#g1 = this.#check(v, "المادة الأولى");
   }
 
   set g2(v) {
-    this.#g2 = this.#checkNum(v, "درجة المادة الثانية");
+    this.#g2 = this.#check(v, "المادة الثانية");
   }
 
   set g3(v) {
-    this.#g3 = this.#checkNum(v, "درجة المادة الثالثة");
+    this.#g3 = this.#check(v, "المادة الثالثة");
   }
 
   set att(v) {
-    this.#att = this.#checkNum(v, "نسبة الحضور");
+    this.#att = this.#check(v, "نسبة الحضور");
   }
 
   get g1() {
@@ -58,68 +58,61 @@ class Student {
     return this.#att;
   }
 
-  getAvg() {
+  avg() {
     return (this.#g1 + this.#g2 + this.#g3) / 3;
   }
 }
 
-const studentsList = [];
+var studentsList = [];
 
-const nameInput = document.getElementById("studentName");
-const g1Input = document.getElementById("grade1");
-const g2Input = document.getElementById("grade2");
-const g3Input = document.getElementById("grade3");
-const attInput = document.getElementById("attendance");
-
-const addBtn = document.getElementById("addBtn");
-const mercyBtn = document.getElementById("mercyBtn");
-
-const errorBox = document.getElementById("errorBox");
-const studentsBox = document.getElementById("studentsBox");
-const reportBox = document.getElementById("reportBox");
-
-addBtn.onclick = function () {
-  errorBox.classList.add("d-none");
-  errorBox.textContent = "";
+function addStudent() {
+  var errorBox = document.getElementById("errorBox");
+  var studentsBox = document.getElementById("studentsBox");
+  errorBox.className = "alert alert-danger d-none";
+  errorBox.innerHTML = "";
 
   try {
-    const s = new Student(
-      nameInput.value,
-      g1Input.value,
-      g2Input.value,
-      g3Input.value,
-      attInput.value
-    );
+    var nameVal = document.getElementById("studentName").value;
+    var g1Val = document.getElementById("grade1").value;
+    var g2Val = document.getElementById("grade2").value;
+    var g3Val = document.getElementById("grade3").value;
+    var attVal = document.getElementById("attendance").value;
 
-    studentsList.push(s);
+    var st = new Student(nameVal, g1Val, g2Val, g3Val, attVal);
+    studentsList.push(st);
 
-    studentsBox.innerHTML +=
+    studentsBox.innerHTML =
+      studentsBox.innerHTML +
       "<div class='student-row'>" +
-      "الاسم: " + s.name + " | " +
-      "الدرجات: " + s.g1 + "، " + s.g2 + "، " + s.g3 + " | " +
-      "المتوسط: " + s.getAvg().toFixed(2) + " | " +
-      "الحضور: " + s.att + "%" +
+      "الاسم: " + st.name + " | " +
+      "المادة الأولى: " + st.g1 + " | " +
+      "المادة الثانية: " + st.g2 + " | " +
+      "المادة الثالثة: " + st.g3 + " | " +
+      "المتوسط: " + st.avg().toFixed(2) + " | " +
+      "نسبة الحضور: " + st.att + "%" +
       "</div>";
 
-    nameInput.value = "";
-    g1Input.value = "";
-    g2Input.value = "";
-    g3Input.value = "";
-    attInput.value = "";
-  } catch (error) {
-    errorBox.textContent = error.message;
-    errorBox.classList.remove("d-none");
+    document.getElementById("studentName").value = "";
+    document.getElementById("grade1").value = "";
+    document.getElementById("grade2").value = "";
+    document.getElementById("grade3").value = "";
+    document.getElementById("attendance").value = "";
+  } catch (err) {
+    errorBox.innerHTML = err.message;
+    errorBox.className = "alert alert-danger";
   }
-};
+}
 
-mercyBtn.onclick = function () {
-  errorBox.classList.add("d-none");
+function runMercy() {
+  var errorBox = document.getElementById("errorBox");
+  var reportBox = document.getElementById("reportBox");
+  errorBox.className = "alert alert-danger d-none";
 
-  const struggling = studentsList.filter(function (s) {
-    return s.getAvg() >= 40 && s.getAvg() <= 49;
+  var weak = studentsList.filter(function (st) {
+    return st.avg() >= 40 && st.avg() <= 49;
   });
 
-  if (struggling.length === 0) {
+  if (weak.length === 0) {
     reportBox.innerHTML =
       "<div class='report-box'>" +
       "<div>عدد الطلاب المتعثرين: 0</div>" +
@@ -129,20 +122,20 @@ mercyBtn.onclick = function () {
     return;
   }
 
-  const afterMercy = struggling.map(function (s) {
+  var boosted = weak.map(function (st) {
     return {
-      name: s.name,
-      newAvg: s.getAvg() + 5
+      name: st.name,
+      newAvg: st.avg() + 5
     };
   });
 
-  const sum = afterMercy.reduce(function (total, item) {
-    return total + item.newAvg;
+  var sum = boosted.reduce(function (acc, item) {
+    return acc + item.newAvg;
   }, 0);
 
-  const finalAvg = afterMercy.length > 0 ? sum / afterMercy.length : 0;
+  var finalAvg = boosted.length > 0 ? sum / boosted.length : 0;
 
-  const names = afterMercy
+  var names = boosted
     .map(function (item) {
       return item.name;
     })
@@ -150,8 +143,20 @@ mercyBtn.onclick = function () {
 
   reportBox.innerHTML =
     "<div class='report-box'>" +
-    "<div>عدد الطلاب المتعثرين: " + afterMercy.length + "</div>" +
+    "<div>عدد الطلاب المتعثرين: " + boosted.length + "</div>" +
     "<div>أسماء الطلاب المتعثرين: " + names + "</div>" +
     "<div>المتوسط العام بعد الرأفة: " + finalAvg.toFixed(2) + "</div>" +
     "</div>";
+}
+
+window.onload = function () {
+  var addBtn = document.getElementById("addBtn");
+  var mercyBtn = document.getElementById("mercyBtn");
+
+  if (addBtn) {
+    addBtn.onclick = addStudent;
+  }
+  if (mercyBtn) {
+    mercyBtn.onclick = runMercy;
+  }
 };
